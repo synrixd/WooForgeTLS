@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WooForgeTLS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+
+    <main class="page-shell">
+        <section class="hero-card">
+            <div class="hero-top">
+                <div>
+                    <span class="badge">WooCommerce CSV Generator</span>
+                    <h1>WooForgeTLS</h1>
+                    <p class="subtitle">
+                        Añade productos en tarjetas limpias, con todos los campos importantes visibles,
+                        defaults precargados y exportación directa a CSV.
+                    </p>
+                </div>
+                <div class="hero-actions">
+                    <button type="button" class="secondary-btn" id="addProductTop">
+                        + Agregar producto
+                    </button>
+                </div>
+            </div>
+
+            {% if error %}
+                <div class="error-box">{{ error }}</div>
+            {% endif %}
+
+            <div id="draftNotice" class="draft-notice hidden">
+                Se encontró un borrador guardado localmente.
+            </div>
+
+            <div id="undoDeleteBar" class="undo-delete-bar hidden">
+                <span id="undoDeleteText">Producto eliminado.</span>
+                <button type="button" class="secondary-btn compact-btn" id="undoDeleteButton">Deshacer</button>
+            </div>
+
+            <form method="POST" id="productsForm">
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <div class="counter-box">
+                            Productos: <span id="productCount" class="counter-highlight">0</span>
+                        </div>
+
+                        <div class="counter-box">
+                            Estado general: <span id="globalStatusText" class="status-mini-text">Sin productos</span>
+                        </div>
+                    </div>
+
+                    <div class="toolbar-right">
+                        <button type="button" class="secondary-btn" id="openShortcutsModalButton">
+                            Atajos
+                        </button>
+                        <button type="button" class="secondary-btn" id="expandAllButton">
+                            Expandir todo
+                        </button>
+                        <button type="button" class="secondary-btn" id="collapseAllButton">
+                            Contraer todo
+                        </button>
+                        <button type="button" class="secondary-btn" id="saveDraftButton">
+                            Guardar borrador
+                        </button>
+                        <button type="button" class="secondary-btn" id="restoreDraftButton">
+                            Restaurar borrador
+                        </button>
+                        <button type="button" class="danger-btn" id="clearDraftButton">
+                            Limpiar borrador
+                        </button>
+                        <button type="button" class="secondary-btn" id="exportJsonButton">
+                            Exportar JSON
+                        </button>
+                        <button type="button" class="secondary-btn" id="importJsonButton">
+                            Importar JSON
+                        </button>
+                        <button type="button" class="secondary-btn" id="addProductMid">
+                            + Agregar producto
+                        </button>
+                        <button type="submit" class="primary-btn">
+                            Generar CSV
+                        </button>
+                    </div>
+                </div>
+
+                <input type="file" id="importJsonFileInput" accept=".json,application/json" hidden>
+
+                <div id="productsContainer" class="products-stack"></div>
+
+                <div class="bottom-actions">
+                    <button type="button" class="secondary-btn" id="addProductBottom">
+                        + Agregar producto
+                    </button>
+                    <button type="submit" class="primary-btn">
+                        Generar CSV
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <template id="productCardTemplate">
+        <article class="product-card expanded status-missing">
+            <div class="product-card-header">
+                <div class="product-card-title-wrap">
+                    <div class="product-title-row">
+                        <div>
+                            <p class="product-label">Producto</p>
+                            <h2 class="product-title">
+                                Producto <span class="product-number"></span>
+                                <span class="product-live-name"></span>
+                            </h2>
+                        </div>
+
+                        <div class="product-status-wrap">
+                            <span class="product-status-badge">Faltan datos</span>
+                        </div>
+                    </div>
+
+                    <div class="product-summary"></div>
+                </div>
+
+                <div class="product-card-actions">
+                    <button type="button" class="secondary-btn compact-btn move-up-btn">
+                        Subir
+                    </button>
+                    <button type="button" class="secondary-btn compact-btn move-down-btn">
+                        Bajar
+                    </button>
+                    <button type="button" class="secondary-btn compact-btn toggle-product-btn">
+                        Contraer
+                    </button>
+                    <button type="button" class="danger-btn compact-btn remove-product-btn">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card-body">
+                <div class="section-title"><span>Básico</span></div>
+                <div class="form-grid form-grid-5">
+                    <div class="field">
+                        <label>Type</label>
+                        <input type="text" name="type[]" value="simple, downloadable, virtual">
+                    </div>
+
+                    <div class="field field-wide-2">
+                        <label>Name</label>
+                        <input type="text" name="name[]" placeholder="Nombre del producto">
+                    </div>
+
+                    <div class="field">
+                        <label>Published</label>
+                        <input type="text" name="published[]" value="1">
+                    </div>
+
+                    <div class="field">
+                        <label>Is featured?</label>
+                        <input type="text" name="featured[]" value="0">
+                    </div>
+
+                    <div class="field">
+                        <label>Visibility in catalog</label>
+                        <input type="text" name="visibility[]" value="visible">
+                    </div>
+                </div>
+
+                <div class="section-title"><span>Contenido</span></div>
+                <div class="form-grid form-grid-2">
+                    <div class="field">
+                        <label>Short description</label>
+                        <textarea name="short_description[]" placeholder="Descripción corta"></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label>Description</label>
+                        <textarea name="description[]" placeholder="Descripción completa"></textarea>
+                    </div>
+                </div>
+
+                <div class="section-title"><span>Inventario y precios</span></div>
+                <div class="form-grid form-grid-6">
+                    <div class="field">
+                        <label>In stock?</label>
+                        <input type="text" name="in_stock[]" value="1">
+                    </div>
+
+                    <div class="field">
+                        <label>Backorders allowed?</label>
+                        <input type="text" name="backorders[]" value="0">
+                    </div>
+
+                    <div class="field">
+                        <label>Sold individually?</label>
+                        <input type="text" name="sold_individually[]" value="0">
+                    </div>
+
+                    <div class="field">
+                        <label>Allow customer reviews?</label>
+                        <input type="text" name="reviews[]" value="1">
+                    </div>
+
+                    <div class="field">
+                        <label>Sale price</label>
+                        <input type="text" name="sale_price[]" placeholder="9.99">
+                    </div>
+
+                    <div class="field">
+                        <label>Regular price</label>
+                        <input type="text" name="regular_price[]" placeholder="19.99">
+                    </div>
+                </div>
+
+                <div class="section-title"><span>Media y descarga</span></div>
+                <div class="form-grid form-grid-4">
+                    <div class="field">
+                        <label>Categories</label>
+                        <input type="text" name="categories[]" value="Classic TV">
+                    </div>
+
+                    <div class="field field-wide-3">
+                        <label>Images</label>
+                        <input type="text" name="images[]" placeholder="https://dominio.com/imagen.jpg">
+                    </div>
+
+                    <div class="field">
+                        <label>Download limit</label>
+                        <input type="text" name="download_limit[]" value="-1">
+                    </div>
+
+                    <div class="field">
+                        <label>Download expiry days</label>
+                        <input type="text" name="download_expiry_days[]" value="-1">
+                    </div>
+
+                    <div class="field">
+                        <label>Position</label>
+                        <input type="text" name="position[]" value="0">
+                    </div>
+
+                    <div class="field">
+                        <label>Download 1 name</label>
+                        <input type="text" name="download_name[]" placeholder="Nombre del archivo">
+                    </div>
+
+                    <div class="field field-wide-2">
+                        <label>Download 1 URL</label>
+                        <input type="text" name="download_url[]" placeholder="https://dominio.com/archivo.zip">
+                    </div>
+                </div>
+
+                <div class="section-title"><span>SEO</span></div>
+                <div class="form-grid form-grid-2">
+                    <div class="field">
+                        <label>Meta: rank_math_description</label>
+                        <textarea name="seo_description[]" placeholder="Descripción SEO"></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label>Meta: rank_math_focus_keyword</label>
+                        <input type="text" name="focus_keyword[]" placeholder="Keyword principal">
+                    </div>
+                </div>
+            </div>
+        </article>
+    </template>
+
+    <div id="shortcutsModalOverlay" class="shortcuts-modal-overlay hidden">
+        <div class="shortcuts-modal">
+            <div class="shortcuts-modal-header">
+                <h3>Atajos de teclado</h3>
+                <button type="button" class="danger-btn compact-btn" id="closeShortcutsModalButton">
+                    Cerrar
+                </button>
+            </div>
+
+            <div class="shortcuts-modal-body">
+                <div class="shortcut-row">
+                    <div class="shortcut-keys">
+                        <kbd>Ctrl</kbd>
+                        <span>+</span>
+                        <kbd>Shift</kbd>
+                        <span>+</span>
+                        <kbd>A</kbd>
+                    </div>
+                    <div class="shortcut-action">Agregar producto</div>
+                </div>
+
+                <div class="shortcut-row">
+                    <div class="shortcut-keys">
+                        <kbd>Ctrl</kbd>
+                        <span>+</span>
+                        <kbd>Shift</kbd>
+                        <span>+</span>
+                        <kbd>E</kbd>
+                    </div>
+                    <div class="shortcut-action">Expandir / contraer todo</div>
+                </div>
+
+                <div class="shortcut-row">
+                    <div class="shortcut-keys">
+                        <kbd>Ctrl</kbd>
+                        <span>+</span>
+                        <kbd>Shift</kbd>
+                        <span>+</span>
+                        <kbd>S</kbd>
+                    </div>
+                    <div class="shortcut-action">Guardar borrador</div>
+                </div>
+
+                <div class="shortcut-row">
+                    <div class="shortcut-keys">
+                        <kbd>?</kbd>
+                    </div>
+                    <div class="shortcut-action">Abrir / cerrar esta ventana</div>
+                </div>
+
+                <div class="shortcut-row">
+                    <div class="shortcut-keys">
+                        <kbd>Esc</kbd>
+                    </div>
+                    <div class="shortcut-action">Cerrar esta ventana</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+<script type='text/javascript'>
+    kofiwidget2.init('Support me on Ko-fi', '#ff7a18', 'I2I51OEF3A');
+    kofiwidget2.draw();
+
+    setTimeout(function () {
+        const kofiWidget = document.querySelector('iframe[id^="kofi-widget"]');
+
+        if (kofiWidget) {
+            kofiWidget.style.position = "fixed";
+            kofiWidget.style.top = "18px";
+            kofiWidget.style.right = "18px";
+            kofiWidget.style.left = "auto";
+            kofiWidget.style.bottom = "auto";
+            kofiWidget.style.zIndex = "9999";
+            kofiWidget.style.borderRadius = "14px";
+            kofiWidget.style.boxShadow = "0 12px 35px rgba(0, 0, 0, 0.35)";
+            kofiWidget.style.transform = "scale(1.18)";
+            kofiWidget.style.transformOrigin = "top right";
+            kofiWidget.style.animation = "kofiFloat 2.2s ease-in-out infinite";
+        }
+    }, 800);
+</script>
+
+<style>
+@keyframes kofiFloat {
+    0% {
+        transform: scale(1.18) translateY(0px);
+    }
+    50% {
+        transform: scale(1.18) translateY(-6px);
+    }
+    100% {
+        transform: scale(1.18) translateY(0px);
+    }
+}
+</style>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
