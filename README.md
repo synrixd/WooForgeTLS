@@ -1,7 +1,13 @@
+<div align="center">
+
 # 🚀 WooForgeTLS
 
 > Generador profesional de productos digitales para WooCommerce  
 > Optimizado para SEO (RankMath) + flujo rápido de carga masiva
+
+[![Ko-fi](https://img.shields.io/badge/☕%20Apóyame%20en-Ko--fi-ff7a18?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/I2I51OEF3A)
+
+</div>
 
 ---
 
@@ -35,6 +41,14 @@ python app.py
 
 ---
 
+<div align="center">
+
+[![Ko-fi](https://img.shields.io/badge/☕%20Apóyame%20en-Ko--fi-ff7a18?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/I2I51OEF3A)
+
+</div>
+
+---
+
 ## 🧠 Cómo usar
 
 ### 🧩 Flujo básico
@@ -49,9 +63,11 @@ python app.py
 ## 🧾 Sobre los campos
 
 ### ⚠️ IMPORTANTE
+
 Los campos que ya vienen con valores por defecto:
 
 👉 **NO deben modificarse**, ya que están optimizados para:
+
 - compatibilidad con WooCommerce
 - estructura correcta del CSV
 
@@ -65,13 +81,13 @@ Este generador está pensado para trabajar con:
 
 Pero ten en cuenta:
 
-- El score (ej: 98/100) **NO depende de la herramienta**
+- El score (ej: 98/100) **no depende de la herramienta**
 - Depende de cómo escribas:
   - título
   - descripción
   - keywords
 
-👉 WooForgeTLS solo estructura el contenido correctamente en HTML.
+👉 WooForgeTLS solo estructura el contenido correctamente en HTML para que luego puedas trabajarlo bien dentro de WooCommerce.
 
 ---
 
@@ -79,14 +95,16 @@ Pero ten en cuenta:
 
 Las imágenes deben:
 
-- Estar subidas previamente en tu hosting / CDN
+- Estar subidas previamente en tu hosting, CDN o nube
 - Ser URLs accesibles públicamente
 
-### 📌 Formato correcto:
+### 📌 Formato correcto
 
+```text
 img1.png, img2.png, img3.png
+```
 
-👉 Separadas por comas  
+👉 Deben ir separadas por comas.
 
 ---
 
@@ -94,13 +112,14 @@ img1.png, img2.png, img3.png
 
 Este sistema está diseñado **solo para productos digitales**.
 
-### ✔️ Ejemplos:
+### ✔️ Ejemplos
+
 - PDFs
 - ZIPs
 - Software
 - Recursos descargables
 
-### 📌 Importante:
+### 📌 Importante
 
 Debes colocar:
 
@@ -109,7 +128,7 @@ Debes colocar:
 
 ---
 
-## ❌ No está pensado para:
+## ❌ No está pensado para
 
 - productos físicos
 - envíos
@@ -130,9 +149,15 @@ Incluye:
 
 ---
 
+<div align="center">
+
 ## ❤️ Apóyame
 
-Si este proyecto te ayuda, puedes apoyarme en Ko-fi ☕
+Cualquier apoyo será **mil gracias** ☕✨
+
+[![Ko-fi](https://img.shields.io/badge/☕%20Apóyame%20en-Ko--fi-ff7a18?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/I2I51OEF3A)
+
+</div>
 
 ---
 
