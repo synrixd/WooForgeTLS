@@ -16,3 +16,5 @@ pyinstaller ^
     desktop.py
 
 pause
+
+:: Esto también es un comentario
