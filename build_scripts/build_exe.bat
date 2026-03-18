@@ -17,4 +17,3 @@ pyinstaller ^
 
 pause
 
-:: Esto también es un comentario
